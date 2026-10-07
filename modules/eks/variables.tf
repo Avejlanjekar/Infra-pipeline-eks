@@ -1,45 +1,45 @@
-variable "cluster_name" {
-  description = "Name of the shared EKS cluster"
+variable "CLUSTER_NAME" {
+  description = "Name of the EKS cluster"
   type        = string
 }
 
-variable "subnet_ids" {
+variable "SUBNET_IDS" {
   description = "Private subnet IDs for EKS"
   type        = list(string)
 }
 
-variable "node_group_name" {
+variable "NODE_GROUP_NAME" {
   description = "Name of the managed node group"
   type        = string
 }
 
-variable "instance_types" {
+variable "INSTANCE_TYPES" {
   description = "EC2 instance types for worker nodes"
   type        = list(string)
   default     = ["t3.medium"]
 }
 
-variable "desired_size" {
+variable "DESIRED_SIZE" {
   type    = number
   default = 2
 }
 
-variable "min_size" {
+variable "MIN_SIZE" {
   type    = number
   default = 1
 }
 
-variable "max_size" {
+variable "MAX_SIZE" {
   type    = number
   default = 3
 }
 
-variable "tags" {
+variable "TAGS" {
   type    = map(string)
   default = {}
 }
 
-variable "cluster_version" {
+variable "CLUSTER_VERSION" {
   description = "Kubernetes version for the EKS cluster"
   type        = string
 }

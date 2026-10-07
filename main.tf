@@ -34,18 +34,33 @@ module "VPC" {
 module "EKS" {
   source = "./modules/eks"
 
-  cluster_name    = "employee-management-eks"
-  node_group_name = "employee-management-ng"
-  cluster_version = "1.33"
+  CLUSTER_NAME    = var.CLUSTER_NAME
+  NODE_GROUP_NAME = var.NODE_GROUP_NAME
+  CLUSTER_VERSION = var.CLUSTER_VERSION
 
-  subnet_ids     = module.VPC.APP_SUBNET_IDS
-  instance_types = ["t3.small"]
+  SUBNET_IDS     = module.VPC.APP_SUBNET_IDS
+  INSTANCE_TYPES = [var.INSTANCE_TYPE]
 
-  desired_size = 1
-  min_size     = 1
-  max_size     = 2
+  DESIRED_SIZE = 1
+  MIN_SIZE     = 1
+  MAX_SIZE     = 2
 
-  tags = merge(var.COMMON_TAGS, {
-    Name = "employee-management-eks"
+  TAGS = merge(var.COMMON_TAGS, {
+    Name = var.CLUSTER_NAME
   })
+}
+
+module "AWS_LB_CONTROLLER" {
+  source = "./modules/aws-lb-controller"
+
+  CLUSTER_NAME = module.EKS.cluster_name
+  REGION       = var.AWS_REGION
+  VPC_ID       = module.VPC.VPC_ID
+
+  CLUSTER_ENDPOINT                   = module.EKS.cluster_endpoint
+  CLUSTER_CERTIFICATE_AUTHORITY_DATA = module.EKS.cluster_certificate_authority_data
+
+  depends_on = [
+    module.EKS
+  ]
 }
