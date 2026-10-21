@@ -123,3 +123,21 @@ variable "DATABASE_RT_NAME" {
 variable "AWS_REGION" {
   type = string
 }
+
+variable "DESIRED_SIZE" {
+  description = "Desired number of EKS worker nodes"
+  type        = number
+  default     = 1
+}
+
+variable "MIN_SIZE" {
+  description = "Minimum number of EKS worker nodes"
+  type        = number
+  default     = 1
+}
+
+variable "MAX_SIZE" {
+  description = "Maximum number of EKS worker nodes"
+  type        = number
+  default     = 2
+}

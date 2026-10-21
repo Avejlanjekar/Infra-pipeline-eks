@@ -8,51 +8,41 @@ data "tls_certificate" "this" {
 
 resource "aws_iam_openid_connect_provider" "this" {
   url = data.aws_eks_cluster.this.identity[0].oidc[0].issuer
-
   client_id_list = [
     "sts.amazonaws.com"
   ]
-
   thumbprint_list = [
     data.tls_certificate.this.certificates[0].sha1_fingerprint
   ]
 }
 
 resource "aws_iam_policy" "this" {
-  name = "${var.CLUSTER_NAME}-AWSLoadBalancerControllerIAMPolicy"
-
+  name   = "${var.CLUSTER_NAME}-AWSLoadBalancerControllerIAMPolicy"
   policy = file("${path.module}/iam-policy.json")
 }
 
 data "aws_iam_policy_document" "this_assume_role" {
   statement {
     effect = "Allow"
-
     principals {
       type = "Federated"
-
       identifiers = [
         aws_iam_openid_connect_provider.this.arn
       ]
     }
-
     actions = [
       "sts:AssumeRoleWithWebIdentity"
     ]
-
     condition {
       test     = "StringEquals"
       variable = "${replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:aud"
-
       values = [
         "sts.amazonaws.com"
       ]
     }
-
     condition {
       test     = "StringEquals"
       variable = "${replace(data.aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub"
-
       values = [
         "system:serviceaccount:kube-system:aws-load-balancer-controller"
       ]
@@ -61,8 +51,7 @@ data "aws_iam_policy_document" "this_assume_role" {
 }
 
 resource "aws_iam_role" "this" {
-  name = "${var.CLUSTER_NAME}-aws-load-balancer-controller"
-
+  name               = "${var.CLUSTER_NAME}-aws-load-balancer-controller"
   assume_role_policy = data.aws_iam_policy_document.this_assume_role.json
 }
 
@@ -75,7 +64,6 @@ resource "kubernetes_service_account" "this" {
   metadata {
     name      = "aws-load-balancer-controller"
     namespace = "kube-system"
-
     annotations = {
       "eks.amazonaws.com/role-arn" = aws_iam_role.this.arn
     }
@@ -87,12 +75,10 @@ resource "kubernetes_service_account" "this" {
 }
 
 resource "helm_release" "this" {
-  name      = "aws-load-balancer-controller"
-  namespace = "kube-system"
-
+  name       = "aws-load-balancer-controller"
+  namespace  = "kube-system"
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
-
   set = [
     {
       name  = "clusterName"
@@ -115,7 +101,6 @@ resource "helm_release" "this" {
       value = kubernetes_service_account.this.metadata[0].name
     }
   ]
-
   depends_on = [
     kubernetes_service_account.this
   ]

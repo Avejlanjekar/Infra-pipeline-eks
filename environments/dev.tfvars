@@ -2,6 +2,9 @@ CLUSTER_NAME    = "employee-management-eks-dev"
 NODE_GROUP_NAME = "employee-management-ng-dev"
 INSTANCE_TYPE   = "t3.small"
 CLUSTER_VERSION = "1.33"
+DESIRED_SIZE    = 2
+MIN_SIZE        = 1
+MAX_SIZE        = 2
 
 VPC_NAME = "eks-vpc-dev"
 

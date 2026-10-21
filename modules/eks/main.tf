@@ -1,9 +1,7 @@
 resource "aws_iam_role" "this_role" {
   name = "${var.CLUSTER_NAME}-cluster-role"
-
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
-
     Statement = [{
       Action = "sts:AssumeRole"
       Effect = "Allow"
@@ -13,7 +11,6 @@ resource "aws_iam_role" "this_role" {
       }
     }]
   })
-
   tags = var.TAGS
 }
 
@@ -28,35 +25,28 @@ resource "aws_eks_cluster" "this_cluster" {
   name     = var.CLUSTER_NAME
   role_arn = aws_iam_role.this_role.arn
   version  = var.CLUSTER_VERSION
-
   vpc_config {
     subnet_ids = var.SUBNET_IDS
   }
-
   depends_on = [
     aws_iam_role_policy_attachment.this_cluster_policy
   ]
-
   tags = var.TAGS
 }
 
 
 resource "aws_iam_role" "this_node_group" {
   name = "${var.CLUSTER_NAME}-node-role"
-
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
-
     Statement = [{
       Action = "sts:AssumeRole"
       Effect = "Allow"
-
       Principal = {
         Service = "ec2.amazonaws.com"
       }
     }]
   })
-
   tags = var.TAGS
 }
 
@@ -85,7 +75,6 @@ resource "aws_eks_node_group" "this_node_group" {
   node_role_arn   = aws_iam_role.this_node_group.arn
   subnet_ids      = var.SUBNET_IDS
   instance_types  = var.INSTANCE_TYPES
-
   scaling_config {
     desired_size = var.DESIRED_SIZE
     min_size     = var.MIN_SIZE
@@ -97,6 +86,5 @@ resource "aws_eks_node_group" "this_node_group" {
     aws_iam_role_policy_attachment.this_cni,
     aws_iam_role_policy_attachment.this_container_registry
   ]
-
   tags = var.TAGS
 }
